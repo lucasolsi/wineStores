@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class StoreDto implements Serializable
 {
     private Long id;
-    private String codigo_loja;
-    private int faixa_inicio;
-    private int faixa_fim;
+    private String codigoLoja;
+    private int faixaInicio;
+    private int faixaFim;
 }

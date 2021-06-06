@@ -18,11 +18,11 @@ public class StoreEntity
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String codigo_loja;
+    private String codigoLoja;
 
     @Column(nullable = false, unique = true)
-    private int faixa_inicio;
+    private int faixaInicio;
 
     @Column(nullable = false, unique = true)
-    private int faixa_fim;
+    private int faixaFim;
 }
