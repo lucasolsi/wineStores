@@ -74,19 +74,6 @@ public class StoreController
         storeService.deleteStoreByCodigoLoja(codigoLoja);
     }
 
-    @PutMapping(path = "/codigo/{codigoLoja}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<StoreResponse> updateStore(@PathVariable String codigoLoja, @RequestBody StoreRequest fromRequest)
-    {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(mapperStoreRequestStoreDtoPropertyMap);
-        modelMapper.addMappings(mapperStoreDtoStoreResponsePropertyMap);
-
-        StoreDto storeDto = modelMapper.map(fromRequest, StoreDto.class);
-
-        StoreDto updatedStore = storeService.updateStore(codigoLoja, storeDto);
-
-        return new ResponseEntity<>(modelMapper.map(updatedStore, StoreResponse.class), HttpStatus.OK);
-    }
 
     @PutMapping(path = "/codigo/{codigoLoja}/atualizaFaixa", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StoreResponse> updateFaixaCep(@PathVariable String codigoLoja, @RequestBody UpdateFaixaCepRequest fromRequest)
