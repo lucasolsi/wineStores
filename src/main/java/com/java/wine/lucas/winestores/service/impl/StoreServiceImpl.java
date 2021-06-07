@@ -1,6 +1,9 @@
 package com.java.wine.lucas.winestores.service.impl;
 
 import com.java.wine.lucas.winestores.entity.StoreEntity;
+import com.java.wine.lucas.winestores.exceptions.FaixaAlreadyExistsException;
+import com.java.wine.lucas.winestores.exceptions.StoreAlreadyExistsException;
+import com.java.wine.lucas.winestores.exceptions.StoreNotFoundException;
 import com.java.wine.lucas.winestores.repository.StoreRepository;
 import com.java.wine.lucas.winestores.service.StoreService;
 import com.java.wine.lucas.winestores.shared.dto.StoreDto;
@@ -26,7 +29,7 @@ public class StoreServiceImpl implements StoreService
     {
         if (storeRepository.findByCodigoLoja(storeDto.getCodigoLoja()) != null)
         {
-            throw new RuntimeException("Store with código " + storeDto.getCodigoLoja() + " already exists!");
+            throw new StoreAlreadyExistsException("Store with código " + storeDto.getCodigoLoja() + " already exists!");
         }
 
         checkFaixaInicioAndFaixaFim(storeDto);
@@ -42,7 +45,7 @@ public class StoreServiceImpl implements StoreService
     public void deleteStoreByCodigoLoja(String codigoLoja)
     {
         StoreEntity storeFromDb = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDb == null) throw new RuntimeException();
+        if (storeFromDb == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
         storeRepository.delete(storeFromDb);
     }
 
@@ -50,7 +53,7 @@ public class StoreServiceImpl implements StoreService
     public StoreDto updateStore(String codigoLoja, StoreDto storeDto)
     {
         StoreEntity storeFromDbToUpdate = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDbToUpdate == null) throw new RuntimeException();
+        if (storeFromDbToUpdate == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
 
         checkFaixaInicioAndFaixaFim(storeDto);
 
@@ -78,7 +81,7 @@ public class StoreServiceImpl implements StoreService
     public StoreDto getStoreByCodigoLoja(String codigoLoja)
     {
         StoreEntity storeFromDb = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDb == null) throw new RuntimeException();
+        if (storeFromDb == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
 
         return new ModelMapper().map(storeFromDb, StoreDto.class);
     }
@@ -89,13 +92,6 @@ public class StoreServiceImpl implements StoreService
         List<StoreEntity> checkFaixaInicio = storeRepository.findAllByFaixaInicioBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
         List<StoreEntity> checkFaixaFim = storeRepository.findAllByFaixaFimBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
 
-        if (!checkFaixaInicio.isEmpty() || !checkFaixaFim.isEmpty()) throw new RuntimeException();
-    }
-
-    private boolean isTheSameStore(StoreDto storeDto, List<StoreEntity> checkFaixaInicio, List<StoreEntity> checkFaixaFim)
-    {
-        return (checkFaixaInicio.size() == 1) && (checkFaixaFim.size() == 1) &&
-                (checkFaixaInicio.get(0).getCodigoLoja().equals(storeDto.getCodigoLoja())
-                        && checkFaixaFim.get(0).getCodigoLoja().equals(storeDto.getCodigoLoja()));
+        if (!checkFaixaInicio.isEmpty() || !checkFaixaFim.isEmpty()) throw new FaixaAlreadyExistsException("Faixa de CEP preenchida!");
     }
 }
