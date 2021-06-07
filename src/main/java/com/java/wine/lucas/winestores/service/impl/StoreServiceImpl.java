@@ -86,9 +86,16 @@ public class StoreServiceImpl implements StoreService
 
     private void checkFaixaInicioAndFaixaFim(StoreDto storeDto)
     {
-        StoreEntity checkFaixaInicio = storeRepository.findAllByFaixaInicioBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
-        StoreEntity checkFaixaFim = storeRepository.findAllByFaixaFimBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
+        List<StoreEntity> checkFaixaInicio = storeRepository.findAllByFaixaInicioBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
+        List<StoreEntity> checkFaixaFim = storeRepository.findAllByFaixaFimBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
 
-        if (checkFaixaInicio != null || checkFaixaFim != null) throw new RuntimeException();
+        if (!checkFaixaInicio.isEmpty() || !checkFaixaFim.isEmpty()) throw new RuntimeException();
+    }
+
+    private boolean isTheSameStore(StoreDto storeDto, List<StoreEntity> checkFaixaInicio, List<StoreEntity> checkFaixaFim)
+    {
+        return (checkFaixaInicio.size() == 1) && (checkFaixaFim.size() == 1) &&
+                (checkFaixaInicio.get(0).getCodigoLoja().equals(storeDto.getCodigoLoja())
+                        && checkFaixaFim.get(0).getCodigoLoja().equals(storeDto.getCodigoLoja()));
     }
 }
