@@ -2,7 +2,6 @@ package com.java.wine.lucas.winestores.service.impl;
 
 import com.java.wine.lucas.winestores.entity.StoreEntity;
 import com.java.wine.lucas.winestores.exceptions.FaixaAlreadyExistsException;
-import com.java.wine.lucas.winestores.exceptions.StoreAlreadyExistsException;
 import com.java.wine.lucas.winestores.exceptions.StoreNotFoundException;
 import com.java.wine.lucas.winestores.repository.StoreRepository;
 import com.java.wine.lucas.winestores.service.StoreService;
@@ -27,11 +26,6 @@ public class StoreServiceImpl implements StoreService
     @Override
     public StoreDto createStore(StoreDto storeDto)
     {
-        if (storeRepository.findByCodigoLoja(storeDto.getCodigoLoja()) != null)
-        {
-            throw new StoreAlreadyExistsException("Loja com código " + storeDto.getCodigoLoja() + " já existe!");
-        }
-
         checkFaixaInicioAndFaixaFim(storeDto);
 
         ModelMapper modelMapper = new ModelMapper();
@@ -61,6 +55,17 @@ public class StoreServiceImpl implements StoreService
         storeFromDbToUpdate.setFaixaFim(storeDto.getFaixaFim());
 
         StoreEntity updateStore = storeRepository.save(storeFromDbToUpdate);
+        return new ModelMapper().map(updateStore, StoreDto.class);
+    }
+
+    @Override
+    public StoreDto updateFaixaCep(StoreDto storeDto)
+    {
+        ModelMapper modelMapper = new ModelMapper();
+        StoreEntity storeEntity = modelMapper.map(storeDto, StoreEntity.class);
+        checkFaixaInicioAndFaixaFim(storeDto);
+
+        StoreEntity updateStore = storeRepository.save(storeEntity);
         return new ModelMapper().map(updateStore, StoreDto.class);
     }
 
@@ -104,5 +109,13 @@ public class StoreServiceImpl implements StoreService
                 .findFirst().orElseThrow(() -> new StoreNotFoundException("Nenhuma loja envia para o CEP: " + cep));
 
         return new ModelMapper().map(storeFound, StoreDto.class);
+    }
+
+    @Override
+    public StoreDto findStoreByFaixaCepAndCodigoLoja(String codigoLoja, int fromFaixaInicio, int fromFaixaFim)
+    {
+        StoreEntity storeEntity = storeRepository
+                .findStoreEntityByCodigoLojaEqualsAndFaixaInicioEqualsAndFaixaFimEquals(codigoLoja, fromFaixaInicio, fromFaixaFim);
+        return new ModelMapper().map(storeEntity, StoreDto.class);
     }
 }

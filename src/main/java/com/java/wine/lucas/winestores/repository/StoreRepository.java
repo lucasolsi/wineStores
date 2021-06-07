@@ -12,4 +12,5 @@ public interface StoreRepository extends JpaRepository<StoreEntity, Long>
     List<StoreEntity> findAllByFaixaFimBetween(int faixaInicio, int faixaFim);
     StoreEntity findStoreEntityByFaixaInicioIsGreaterThanEqual(int cep);
     StoreEntity findStoreEntityByFaixaFimIsLessThan(int cep);
+    StoreEntity findStoreEntityByCodigoLojaEqualsAndFaixaInicioEqualsAndFaixaFimEquals(String codigoLoja, int faixaInicio, int faixaFim);
 }

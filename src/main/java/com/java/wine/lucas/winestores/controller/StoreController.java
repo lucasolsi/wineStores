@@ -1,6 +1,7 @@
 package com.java.wine.lucas.winestores.controller;
 
 import com.java.wine.lucas.winestores.model.request.StoreRequest;
+import com.java.wine.lucas.winestores.model.request.UpdateFaixaCepRequest;
 import com.java.wine.lucas.winestores.model.response.StoreResponse;
 import com.java.wine.lucas.winestores.service.StoreService;
 import com.java.wine.lucas.winestores.shared.dto.StoreDto;
@@ -83,6 +84,24 @@ public class StoreController
         StoreDto storeDto = modelMapper.map(fromRequest, StoreDto.class);
 
         StoreDto updatedStore = storeService.updateStore(codigoLoja, storeDto);
+
+        return new ResponseEntity<>(modelMapper.map(updatedStore, StoreResponse.class), HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/codigo/{codigoLoja}/atualizaFaixa", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StoreResponse> updateFaixaCep(@PathVariable String codigoLoja, @RequestBody UpdateFaixaCepRequest fromRequest)
+    {
+        StoreDto storeToUpdate = storeService.findStoreByFaixaCepAndCodigoLoja( codigoLoja, fromRequest.getFromFaixa_inicio(), fromRequest.getFromFaixa_fim());
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(mapperStoreRequestStoreDtoPropertyMap);
+        modelMapper.addMappings(mapperStoreDtoStoreResponsePropertyMap);
+
+        StoreDto storeDto = new StoreDto();
+        storeDto.setFaixaInicio(fromRequest.getToFaixa_inicio());
+        storeDto.setFaixaFim(fromRequest.getToFaixa_fim());
+
+        StoreDto updatedStore = storeService.updateFaixaCep(storeDto);
 
         return new ResponseEntity<>(modelMapper.map(updatedStore, StoreResponse.class), HttpStatus.OK);
     }
