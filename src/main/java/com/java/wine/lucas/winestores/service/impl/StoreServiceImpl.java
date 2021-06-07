@@ -29,7 +29,7 @@ public class StoreServiceImpl implements StoreService
     {
         if (storeRepository.findByCodigoLoja(storeDto.getCodigoLoja()) != null)
         {
-            throw new StoreAlreadyExistsException("Store with código " + storeDto.getCodigoLoja() + " already exists!");
+            throw new StoreAlreadyExistsException("Loja com código " + storeDto.getCodigoLoja() + " já existe!");
         }
 
         checkFaixaInicioAndFaixaFim(storeDto);
@@ -45,7 +45,7 @@ public class StoreServiceImpl implements StoreService
     public void deleteStoreByCodigoLoja(String codigoLoja)
     {
         StoreEntity storeFromDb = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDb == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
+        if (storeFromDb == null) throw new StoreNotFoundException("Loja com id " + codigoLoja + " não existe!");
         storeRepository.delete(storeFromDb);
     }
 
@@ -53,7 +53,7 @@ public class StoreServiceImpl implements StoreService
     public StoreDto updateStore(String codigoLoja, StoreDto storeDto)
     {
         StoreEntity storeFromDbToUpdate = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDbToUpdate == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
+        if (storeFromDbToUpdate == null) throw new StoreNotFoundException("Loja com id " + codigoLoja + " não existe!");
 
         checkFaixaInicioAndFaixaFim(storeDto);
 
@@ -81,7 +81,7 @@ public class StoreServiceImpl implements StoreService
     public StoreDto getStoreByCodigoLoja(String codigoLoja)
     {
         StoreEntity storeFromDb = storeRepository.findByCodigoLoja(codigoLoja);
-        if (storeFromDb == null) throw new StoreNotFoundException("Store with id " + codigoLoja + " does not exists!");
+        if (storeFromDb == null) throw new StoreNotFoundException("Loja com id " + codigoLoja + " não existe!");
 
         return new ModelMapper().map(storeFromDb, StoreDto.class);
     }
@@ -93,5 +93,16 @@ public class StoreServiceImpl implements StoreService
         List<StoreEntity> checkFaixaFim = storeRepository.findAllByFaixaFimBetween(storeDto.getFaixaInicio(), storeDto.getFaixaFim());
 
         if (!checkFaixaInicio.isEmpty() || !checkFaixaFim.isEmpty()) throw new FaixaAlreadyExistsException("Faixa de CEP preenchida!");
+    }
+
+    @Override
+    public StoreDto findStoreByCep(int cep)
+    {
+        List<StoreEntity> storeEntityList = storeRepository.findAll();
+        StoreEntity storeFound = storeEntityList.stream()
+                .filter(storeEntity -> cep >= storeEntity.getFaixaInicio() && cep <= storeEntity.getFaixaFim())
+                .findFirst().orElseThrow(() -> new StoreNotFoundException("Nenhuma loja envia para o CEP: " + cep));
+
+        return new ModelMapper().map(storeFound, StoreDto.class);
     }
 }

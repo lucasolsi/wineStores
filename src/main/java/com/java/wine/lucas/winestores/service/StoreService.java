@@ -11,4 +11,5 @@ public interface StoreService
     StoreDto updateStore(String codigoLoja, StoreDto storeDto);
     List<StoreDto> getAllStores(int page, int limit);
     StoreDto getStoreByCodigoLoja(String codigoLoja);
+    StoreDto findStoreByCep(int cep);
 }

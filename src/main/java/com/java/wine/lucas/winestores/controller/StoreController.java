@@ -87,6 +87,15 @@ public class StoreController
         return new ResponseEntity<>(modelMapper.map(updatedStore, StoreResponse.class), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/buscaCep", produces = MediaType.APPLICATION_JSON_VALUE)
+    public StoreResponse findStoreByCep(@RequestParam(value = "cep") int cep)
+    {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(mapperStoreDtoStoreResponsePropertyMap);
+        StoreDto storeDto = storeService.findStoreByCep(cep);
+        return modelMapper.map(storeDto,StoreResponse.class);
+    }
+
     PropertyMap<StoreRequest, StoreDto> mapperStoreRequestStoreDtoPropertyMap = new PropertyMap<StoreRequest, StoreDto>()
     {
         @Override
